@@ -88,14 +88,10 @@ class chuanglan extends Component{
            'account' => $this->apiAccount,
            'pswd' => $this->apiPassword,
            'msg' => $msg,
-           'phone' => $mobile,
-           'sendtime' => $sendTime,
-           'report' => $isReport,
-           'extends' =>123,
-           'uid' => 'validSend'
+           'phone' => $mobile
        );
        $result = $this->curlPost( $this->apiSendUrl , $postArr);
-       $state = $this->execResult($result)[1];
+       $state = json_decode($result,true);
        $messages = [
            '0' => '提交成功',
            '101' => '无此用户',
@@ -125,9 +121,9 @@ class chuanglan extends Component{
            '129' => 'JSON格式错误',
            '130' => '请求参数错误（缺少必填参数）'
        ];
-       $this->setError($messages[$state] );
-       $success = $state == 0;
-       return $success;
+       $code = $state['code'];
+       $this->setError($messages[$code]);
+       return ['status'=>$code,'msg'=>$messages[$code]];
    }
    /**
     * 查询额度
